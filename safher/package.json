@@ -28,6 +28,7 @@
     "react-native-safe-area-context": "^4.11.0",
     "react-native-screens": "^3.34.0",
     "react-native-toast-message": "^2.2.1",
+    "react-native-user-avatar": "^1.0.8",
     "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
