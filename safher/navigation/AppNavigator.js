@@ -1,21 +1,20 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {NavigationContainer} from '@react-navigation/native';
 import TabNavigator from './TabNavigator';
-// import Login from '../screens/auth/login';
-
-
+import Login from '../screens/auth/login';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
-    return (
-        <NavigationContainer>
-            <Stack.Navigator>
-                {/* <Stack.Screen name="Login" component={Login} /> */}
-                <Stack.Screen name="AfterAuth" component={TabNavigator} />
-            </Stack.Navigator>
-        </NavigationContainer>
-    );
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Login" component={Login} />
+        {/* <Stack.Screen name="AfterAuth" component={TabNavigator} /> */}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 };
 
 export default AppNavigator;

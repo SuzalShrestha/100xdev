@@ -1,10 +1,13 @@
-import React from 'react'
-import AppNavigator from './navigation/AppNavigator'
+import React from 'react';
+import AppNavigator from './navigation/AppNavigator';
+import {GlobalProvider} from './contexts/globalProvider';
 
 const App = () => {
   return (
-    <AppNavigator />
-  )
-}
+    <GlobalProvider>
+      <AppNavigator />
+    </GlobalProvider>
+  );
+};
 
-export default App
+export default App;
