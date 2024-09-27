@@ -79,6 +79,10 @@ const ThirdScreen = () => {
             <Button title="Start Background Service" onPress={startBackgroundService} />
             <Button title="Stop Background Service" onPress={stopBackgroundService} />
             <Text>Service Running: {isRunning ? 'Yes' : 'No'}</Text>
+
+            <View>
+                <Button />
+            </View>
         </View>
     );
 };

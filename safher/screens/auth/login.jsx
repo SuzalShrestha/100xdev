@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   Text,
@@ -9,7 +9,9 @@ import {
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {API_URL} from '@env';
+import { API_URL } from '@env';
+import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../contexts/globalProvider';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -42,6 +44,8 @@ function Login() {
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
   const [isLogged, setIsLogged] = React.useState(false);
+  const navigation = useNavigation();
+  const { setUser, setIsAuthenticated, accessToken } = useAuth()
 
   const handleLogin = async () => {
     console.log(API_URL);
@@ -50,19 +54,21 @@ function Login() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({email, password}),
+      body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
     if (res.ok) {
-      setError('');
-      setIsLogged(true);
       await AsyncStorage.setItem('accessToken', data.data.accessToken);
       await AsyncStorage.setItem('user', JSON.stringify(data.data.user));
+      setError('');
+      setIsAuthenticated(true)
+      setUser(data.data.user)
       Toast.show({
         type: 'success',
         text1: 'Login Successful',
         text2: 'Welcome back!',
       });
+      navigation.navigate("AfterAuth")
     } else {
       console.log(res.json());
       setError('Credentials invalid');
@@ -77,7 +83,7 @@ function Login() {
     <SafeAreaView style={styles.container}>
       <View>
         <Text style={styles.headerText}>SAFHER</Text>
-        <View style={{margin: 10}}></View>
+        <View style={{ margin: 10 }}></View>
       </View>
       <TextInput
         style={{
@@ -110,7 +116,7 @@ function Login() {
       />
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <TouchableOpacity style={styles.touchable} onPress={handleLogin}>
-        <Text style={{color: 'white', margin: 5}}>LOGIN</Text>
+        <Text style={{ color: 'white', margin: 5 }}>LOGIN</Text>
         {/* <MaterialIcons name="arrow-right" size={30} color="black" /> */}
       </TouchableOpacity>
       <Toast ref={ref => Toast.setRef(ref)} />

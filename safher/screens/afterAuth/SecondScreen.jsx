@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, Button, Alert } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { io } from 'socket.io-client';
 import * as turf from '@turf/turf';
+import { useSocket } from '../../contexts/socketContext';
 
 MapLibreGL.setConnected(true);
 MapLibreGL.setAccessToken(null);
@@ -12,20 +13,16 @@ function SecondScreen({ navigation }) {
     const [coords, setCoords] = useState();
     const [receivedCoords, setReceivedCoords] = useState();
     const [myCoords, setMyCoords] = useState({});
+    const { socket } = useSocket();
 
-    const socket = useMemo(() => {
-        return io('https://0q4jhdwq-8000.inc1.devtunnels.ms/');
-    }, []);
 
     useEffect(() => {
-        socket.on('connect', () => {
-            console.log('WebSocket connected second screen');
-            socket.emit('join-room', "mukunda");
-        });
+
+        socket.emit('join-room', 5);
 
 
-        socket.on('recieve-coordinates', (message) => {
-            console.log(message);
+        socket.on('receive-coordinates', (message) => {
+            console.log("Eta aayo", message);
             if (message.longitude && message.latitude) {
                 setReceivedCoords({
                     longitude: message.longitude,
@@ -33,12 +30,7 @@ function SecondScreen({ navigation }) {
                 });
             }
         });
-
-        return () => {
-            socket.disconnect();
-            console.log('WebSocket disconnected');
-        };
-    }, []);
+    }, [socket]);
 
     const getCurrentLocation = () => {
         console.log("Inside get location function");

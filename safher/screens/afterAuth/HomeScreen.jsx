@@ -4,23 +4,24 @@ import { StyleSheet, View, Text, Button, Alert, AppState } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { PERMISSIONS, request, check, RESULTS } from 'react-native-permissions';
 import { io } from 'socket.io-client';
-import { useNavigation } from '@react-navigation/native';
 import BackgroundActions from 'react-native-background-actions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSocket } from '../../contexts/socketContext';
 
 // Set MapLibre configurations
 MapLibreGL.setConnected(true);
 MapLibreGL.setAccessToken(null);
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
     const [coords, setCoords] = useState(null);
     const [path, setPath] = useState([]);
     const [followMe, setFollowMe] = useState(false);
     const [locationPermission, setLocationPermission] = useState(false);
-    const navigation = useNavigation();
     const appState = useRef(AppState.currentState);
+    const { socket } = useSocket();
 
     // WebSocket connection setup
-    const socket = useMemo(() => io('https://0q4jhdwq-8000.inc1.devtunnels.ms/'), []);
+    // const socket = useMemo(() => io('https://0q4jhdwq-8000.inc1.devtunnels.ms/'), []);
 
     // Background task for tracking location
     const veryIntensiveTask = async () => {
@@ -145,18 +146,9 @@ const HomeScreen = () => {
 
     // WebSocket connection management
     useEffect(() => {
-        socket.on('connect', () => {
-            console.log('WebSocket connected');
-        });
 
-        socket.on('coordinates', () => {
-            console.log('Coordinates received');
-        });
 
-        return () => {
-            socket.disconnect();
-            console.log('WebSocket disconnected');
-        };
+        socket.emit('join-room')
     }, [socket]);
 
     // Check and request location permissions on component mount
@@ -205,7 +197,7 @@ const HomeScreen = () => {
                     enableHighAccuracy: false,
                     distanceFilter: 0.5,
                     maximumAge: 0,
-                    timeout: 3000,
+                    timeout: 5000,
                 }
             );
 
@@ -280,6 +272,10 @@ const HomeScreen = () => {
                 <View>
                     <Button title='Follow Me!' onPress={handleFollowMe} />
                     <Button title='Stop Follow Me' onPress={handleStopFollowing} />
+                    <Button title='Logout' onPress={() => {
+                        AsyncStorage.clear();
+                        navigation.navigate("Login")
+                    }} />
                 </View>
             </View>
         </View>
