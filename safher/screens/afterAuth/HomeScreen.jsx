@@ -115,6 +115,7 @@ const HomeScreen = ({ navigation }) => {
 
     // Enable follow-me mode
     const handleFollowMe = async () => {
+        socket.emit('join-room')
         setFollowMe(true);
         console.log('Follow Me enabled');
     };
@@ -144,12 +145,6 @@ const HomeScreen = ({ navigation }) => {
         };
     }, [followMe, locationPermission]);
 
-    // WebSocket connection management
-    useEffect(() => {
-
-
-        socket.emit('join-room')
-    }, [socket]);
 
     // Check and request location permissions on component mount
     useEffect(() => {
@@ -237,7 +232,7 @@ const HomeScreen = ({ navigation }) => {
                         showsUserHeadingIndicator={true}
                     />
 
-                    <MapLibreGL.PointAnnotation
+                    {/* <MapLibreGL.PointAnnotation
                         id='my-location'
                         coordinate={[coords.longitude, coords.latitude]}
                         anchor={{ x: 0.5, y: 1 }}
@@ -245,9 +240,9 @@ const HomeScreen = ({ navigation }) => {
                         <View>
                             <Callout title='Current Location' />
                         </View>
-                    </MapLibreGL.PointAnnotation>
+                    </MapLibreGL.PointAnnotation> */}
 
-                    {followMe && path.length >= 2 && (
+                    {/* {followMe && path.length >= 2 && (
                         <MapLibreGL.ShapeSource
                             id="pathSource"
                             shape={{
@@ -266,7 +261,7 @@ const HomeScreen = ({ navigation }) => {
                                 }}
                             />
                         </MapLibreGL.ShapeSource>
-                    )}
+                    )} */}
                 </MapLibreGL.MapView>
 
                 <View>
