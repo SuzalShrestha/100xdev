@@ -2,6 +2,7 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import UserAvatar from 'react-native-user-avatar';
 import { useAuth } from '../../contexts/globalProvider';
+import { ScrollView } from 'react-native-gesture-handler';
 const styles = StyleSheet.create({
   headerText: {
     fontSize: 40,
@@ -18,7 +19,7 @@ function Profile() {
   const { user } = useAuth();
 
   return (
-    <View>
+    <ScrollView>
       <View
         style={{
           padding: 20,
@@ -51,7 +52,7 @@ function Profile() {
         </TouchableOpacity>
         <View />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
