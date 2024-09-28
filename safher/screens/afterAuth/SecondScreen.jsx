@@ -9,7 +9,7 @@ import { useSocket } from '../../contexts/socketContext';
 MapLibreGL.setConnected(true);
 MapLibreGL.setAccessToken(null);
 
-function SecondScreen({ navigation }) {
+function SecondScreen({ navigation, route }) {
     const [coords, setCoords] = useState();
     const [receivedCoords, setReceivedCoords] = useState();
     const [myCoords, setMyCoords] = useState({});
@@ -17,8 +17,13 @@ function SecondScreen({ navigation }) {
 
 
     useEffect(() => {
+        const { params } = route;
+        if (!params) return;
+        const roomId = params?.data?.roomId;
+        console.log("roomid:", params?.data?.roomId);
 
-        socket.emit('follow-room', 1);
+
+        socket.emit('follow-room', roomId);
 
 
 
@@ -31,7 +36,7 @@ function SecondScreen({ navigation }) {
                 });
             }
         });
-    }, [socket]);
+    }, [route]);
 
     const getCurrentLocation = () => {
         console.log("Inside get location function");
