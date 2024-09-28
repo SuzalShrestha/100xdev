@@ -12,7 +12,7 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         if (user && isAuthenticated) {
-            console.log("useeffect is running", accessToken)
+
             const newSocket = io(API_URL, {
                 query: { userId: user.id },
                 auth: { token: accessToken }

@@ -1,4 +1,4 @@
-package com.maplibre
+package com.safher
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -18,7 +18,8 @@ function SecondScreen({ navigation }) {
 
     useEffect(() => {
 
-        socket.emit('join-room', 5);
+        socket.emit('follow-room', 1);
+
 
 
         socket.on('receive-coordinates', (message) => {

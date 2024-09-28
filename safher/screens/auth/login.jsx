@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   Text,
@@ -12,6 +12,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../contexts/globalProvider';
+import getFCMToken from '../../utils/getFCMToken';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -44,39 +46,72 @@ function Login() {
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
   const [isLogged, setIsLogged] = React.useState(false);
+  const [fcmToken, setFcmToken] = useState(null);
   const navigation = useNavigation();
   const { setUser, setIsAuthenticated, accessToken } = useAuth()
 
   const handleLogin = async () => {
-    console.log(API_URL);
-    const res = await fetch(`${API_URL}/api/auth/login/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      await AsyncStorage.setItem('accessToken', data.data.accessToken);
-      await AsyncStorage.setItem('user', JSON.stringify(data.data.user));
-      setError('');
-      setIsAuthenticated(true)
-      setUser(data.data.user)
-      Toast.show({
-        type: 'success',
-        text1: 'Login Successful',
-        text2: 'Welcome back!',
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      navigation.navigate("AfterAuth")
-    } else {
-      console.log(res.json());
-      setError('Credentials invalid');
+      const data = await res.json();
+      if (res.ok) {
+        await AsyncStorage.setItem('accessToken', data.data.accessToken);
+        await AsyncStorage.setItem('user', JSON.stringify(data.data.user));
+        setError('');
+        setIsAuthenticated(true)
+        setUser(data.data.user)
+
+        const token = await getFCMToken();
+        console.log(token)
+
+        try {
+          console.log("bhitra", token)
+          const res = await fetch(`${API_URL}/api/users/create-fcm-token`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token: token }),
+          });
+
+          console.log("token bhitra ko console", await res.json())
+        } catch (error) {
+          Toast.show({
+            type: 'error',
+            text1: 'FCM Token not generated',
+          });
+          console.log("sdlkaf", res.ok)
+        }
+
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successful',
+          text2: 'Welcome back!',
+        });
+
+        navigation.navigate("AfterAuth");
+      } else {
+        console.log(await res.json());
+        setError('Credentials invalid');
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed',
+          text2: 'Invalid credentials',
+        });
+      }
+    } catch (error) {
       Toast.show({
         type: 'error',
         text1: 'Login Failed',
-        text2: 'Invalid credentials',
+        text2: 'Internal Server Error',
       });
+      console.log("error: ", error);
     }
   };
   return (

@@ -115,7 +115,7 @@ const HomeScreen = ({ navigation }) => {
 
     // Enable follow-me mode
     const handleFollowMe = async () => {
-        socket.emit('join-room')
+        socket.emit('join-room');
         setFollowMe(true);
         console.log('Follow Me enabled');
     };

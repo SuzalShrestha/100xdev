@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1038773926019",
+    "project_id": "push-notifications-dca1b",
+    "storage_bucket": "push-notifications-dca1b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038773926019:android:6c9f6cb2e74a78025ac3b6",
+        "android_client_info": {
+          "package_name": "com.safher"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHzxTJ7GKh7YpZ9mxN1ZRBYlcRbTDtF2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
