@@ -26,21 +26,28 @@ const Notifications = () => {
     const renderNotifications = ({ item }) => (
         <TouchableOpacity
             style={styles.notificationCard}
-            onPress={() => navigation.navigate('SecondScreen')}
+            onPress={() => navigation.navigate(JSON.parse(item.data).link, JSON.parse(item.data).roomId)}
         >
             <Text style={styles.title}>{item.title}</Text>
-            {/* <Text style={styles.timestamp}>{item}</Text> Example for timestamp */}
         </TouchableOpacity>
     );
 
     return (
         <View style={styles.container}>
-            <FlatList
-                data={notifications}
-                renderItem={renderNotifications}
-                // keyExtractor={(item) => item.id.toString()} // Ensure id is a string
-                contentContainerStyle={styles.listContainer} // Add padding to the list
-            />
+            {notifications.length === 0 ? ( // Check if there are no notifications
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyMessage}>No notifications found</Text>
+                </View>
+            ) : (
+
+                <FlatList
+                    data={notifications}
+                    renderItem={renderNotifications}
+                    keyExtractor={(item) => item.id.toString()} // Ensure id is a string
+                    contentContainerStyle={styles.listContainer} // Add padding to the list
+                />
+
+            )}
         </View>
     );
 };
@@ -67,13 +74,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333', // Dark text color
     },
-    timestamp: {
-        fontSize: 12,
-        color: '#777', // Lighter text color for timestamp
-        marginTop: 4,
-    },
     listContainer: {
         paddingBottom: 16, // Add some space at the bottom of the list
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptyMessage: {
+        fontSize: 16,
+        color: '#888',
+        textAlign: 'center',
     },
 });
 

@@ -1,8 +1,6 @@
-import React, {useEffect} from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, { useEffect } from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/afterAuth/HomeScreen';
-import SecondScreen from '../screens/afterAuth/SecondScreen';
-import ThirdScreen from '../screens/afterAuth/ThirdScreen';
 import Profile from '../screens/afterAuth/profile';
 import FriendsScreen from '../screens/afterAuth/FriendsScreen';
 import Home from '../screens/auth/home/home';
@@ -11,30 +9,37 @@ import MapIcon from './map.svg';
 import SOSICON from './sos.svg';
 import ProfileIcon from './profile.svg';
 import FriendsIcon from './friends.svg';
-import {Alert} from 'react-native';
-import Notifications from '../screens/afterAuth/Notifications';
 import messaging from '@react-native-firebase/messaging';
+import Notifications from '../screens/afterAuth/Notifications';
+import { Alert } from 'react-native';
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = ({navigation}) => {
+const TabNavigator = ({ navigation }) => {
+
   useEffect(() => {
+
     messaging().onMessage(async remoteMessage => {
       Alert.alert('New Notification Arrived!', JSON.stringify(remoteMessage));
     });
+
+
 
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log('Message handled in the background!', remoteMessage);
     });
 
-    const unsubscribeOnNotificationOpenedApp =
-      messaging().onNotificationOpenedApp(remoteMessage => {
-        console.log(
-          'Notification caused app to open from background state:',
-          remoteMessage,
-        );
 
-        navigation?.navigate('SecondScreen', remoteMessage);
-      });
+    const unsubscribeOnNotificationOpenedApp = messaging().onNotificationOpenedApp(remoteMessage => {
+
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage,
+      );
+
+
+      navigation?.navigate("FollowScreen", remoteMessage);
+    });
+
 
     messaging()
       .getInitialNotification()
@@ -45,18 +50,21 @@ const TabNavigator = ({navigation}) => {
             remoteMessage,
           );
 
-          navigation?.navigate('SecondScreen', remoteMessage);
+
+          navigation?.navigate("FollowScreen", remoteMessage);
         }
       });
+
 
     return () => {
       unsubscribeOnNotificationOpenedApp();
     };
   }, [navigation]);
+
   return (
     <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarIcon: ({color, size}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
           if (route.name === 'Home') {
             return <HomeIcon size={size} color={color} />;
           }
@@ -78,23 +86,24 @@ const TabNavigator = ({navigation}) => {
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
       })}>
-      <Tab.Screen name="Home" component={Home} options={{headerShown: false}} />
+      <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
       <Tab.Screen name="Maps" component={HomeScreen} />
       <Tab.Screen
         name="Profile"
         component={Profile}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Tab.Screen
         name="Friends"
         component={FriendsScreen}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Tab.Screen
         name="Notifications"
         component={Notifications}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
+
     </Tab.Navigator>
   );
 };

@@ -152,7 +152,6 @@ function Login() {
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <TouchableOpacity style={styles.touchable} onPress={handleLogin}>
         <Text style={{ color: 'white', margin: 5 }}>LOGIN</Text>
-        {/* <MaterialIcons name="arrow-right" size={30} color="black" /> */}
       </TouchableOpacity>
       <Toast ref={ref => Toast.setRef(ref)} />
     </SafeAreaView>
