@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "safher.app"
-               BlueprintName = "safher"
-               ReferencedContainer = "container:safher.xcodeproj">
+               BuildableName = "maplibre.app"
+               BlueprintName = "maplibre"
+               ReferencedContainer = "container:maplibre.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "safherTests.xctest"
-               BlueprintName = "safherTests"
-               ReferencedContainer = "container:safher.xcodeproj">
+               BuildableName = "maplibreTests.xctest"
+               BlueprintName = "maplibreTests"
+               ReferencedContainer = "container:maplibre.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "safher.app"
-            BlueprintName = "safher"
-            ReferencedContainer = "container:safher.xcodeproj">
+            BuildableName = "maplibre.app"
+            BlueprintName = "maplibre"
+            ReferencedContainer = "container:maplibre.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "safher.app"
-            BlueprintName = "safher"
-            ReferencedContainer = "container:safher.xcodeproj">
+            BuildableName = "maplibre.app"
+            BlueprintName = "maplibre"
+            ReferencedContainer = "container:maplibre.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
