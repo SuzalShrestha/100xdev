@@ -5,5 +5,12 @@ export default async function handleLocation(
   socket: Socket,
   roomId: string
 ) {
-  socket.on("anythin", () => {});
+  return socket.on("send-coordinates", (coords) => {
+    console.log("Location is recieving on roomId = ", roomId);
+    if (roomId) {
+      // Broadcast the coordinates to other users in the room
+      io.to(roomId).emit("receive-coordinates", coords);
+      console.log("Location broadcasted");
+    }
+  });
 }
