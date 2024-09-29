@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import MapLibreGL, { Callout } from "@maplibre/maplibre-react-native";
-import { StyleSheet, View, Text, Button, Alert, AppState } from 'react-native';
+import MapLibreGL from "@maplibre/maplibre-react-native";
+import { StyleSheet, View, Text, Button, Alert, AppState, TouchableOpacity } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { PERMISSIONS, request, check, RESULTS } from 'react-native-permissions';
-import { io } from 'socket.io-client';
 import BackgroundActions from 'react-native-background-actions';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSocket } from '../../contexts/socketContext';
+import { getDistance } from 'geolib';
+import { Linking } from 'react-native';
 
 // Set MapLibre configurations
 MapLibreGL.setConnected(true);
@@ -19,9 +19,6 @@ const HomeScreen = ({ navigation }) => {
     const [locationPermission, setLocationPermission] = useState(false);
     const appState = useRef(AppState.currentState);
     const { socket } = useSocket();
-
-    // WebSocket connection setup
-    // const socket = useMemo(() => io('https://0q4jhdwq-8000.inc1.devtunnels.ms/'), []);
 
     // Background task for tracking location
     const veryIntensiveTask = async () => {
@@ -145,7 +142,6 @@ const HomeScreen = ({ navigation }) => {
         };
     }, [followMe, locationPermission]);
 
-
     // Check and request location permissions on component mount
     useEffect(() => {
         const checkPermissions = async () => {
@@ -183,7 +179,7 @@ const HomeScreen = ({ navigation }) => {
                         longitude: info.coords.longitude,
                     };
                     setCoords(newCoords);
-                    console.log("In follow me mode: ", coords)
+                    console.log("In follow me mode: ", coords);
                     socket.emit('send-coordinates', newCoords);
                     setPath((prevPath) => [...prevPath, [newCoords.longitude, newCoords.latitude]]);
                 },
@@ -210,9 +206,57 @@ const HomeScreen = ({ navigation }) => {
         );
     }
 
+    const policeStations = [
+        {
+            name: "Station 1",
+            phone: "1234567890",
+            coordinates: { latitude: 12.9715987, longitude: 77.5945627 }
+        },
+        {
+            name: "Station 2",
+            phone: "0987654321",
+            coordinates: { latitude: 12.935223, longitude: 77.624482 }
+        }
+        // Add more stations as necessary
+    ];
+
+    const makeSOSCall = async () => {
+        if (coords) {
+            socket.emit("sos-emergency", coords);
+            Alert.alert("SOS Triggered!");
+
+
+            const { station } = findNearestPoliceStation(coords, policeStations);
+            if (station) {
+                const message = `Emergency! Current Location: ${coords.latitude}, ${coords.longitude}`;
+                sendMessage(station.phone, message); // Call the function to send the SMS
+            } else {
+                Alert.alert('Error', 'No police stations found.');
+            }
+        } else {
+            Alert.alert('Error', 'Location is not available.');
+        }
+    };
+
+    const findNearestPoliceStation = (coords, policeStations) => {
+        return policeStations.reduce((nearest, station) => {
+            const distance = getDistance(
+                { latitude: coords.latitude, longitude: coords.longitude },
+                { latitude: station.coordinates.latitude, longitude: station.coordinates.longitude }
+            );
+
+            return distance < nearest.distance ? { station, distance } : nearest;
+        }, { station: null, distance: Infinity });
+    };
+
+    const sendMessage = (phoneNumber, message) => {
+        const url = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
+        Linking.openURL(url); // Open SMS app with pre-filled message
+    };
+
     return (
         <View style={styles.page}>
-            <View style={styles.map}>
+            <View style={styles.mapContainer}>
                 <MapLibreGL.MapView
                     zoomEnabled={true}
                     scrollEnabled={true}
@@ -231,48 +275,26 @@ const HomeScreen = ({ navigation }) => {
                         visible={true}
                         showsUserHeadingIndicator={true}
                     />
-
-                    {/* <MapLibreGL.PointAnnotation
-                        id='my-location'
-                        coordinate={[coords.longitude, coords.latitude]}
-                        anchor={{ x: 0.5, y: 1 }}
-                    >
-                        <View>
-                            <Callout title='Current Location' />
-                        </View>
-                    </MapLibreGL.PointAnnotation> */}
-
-                    {/* {followMe && path.length >= 2 && (
-                        <MapLibreGL.ShapeSource
-                            id="pathSource"
-                            shape={{
-                                type: 'FeatureCollection',
-                                features: [{
-                                    type: 'Feature',
-                                    geometry: { type: 'LineString', coordinates: path },
-                                }],
-                            }}
-                        >
-                            <MapLibreGL.LineLayer
-                                id="pathLayer"
-                                style={{
-                                    lineColor: 'blue',
-                                    lineWidth: 5,
-                                }}
-                            />
-                        </MapLibreGL.ShapeSource>
-                    )} */}
                 </MapLibreGL.MapView>
+            </View>
 
-                <View>
-                    <Button title='Follow Me!' onPress={handleFollowMe} />
-                    <Button title='Stop Follow Me' onPress={handleStopFollowing} />
-                    <Button title='Logout' onPress={() => {
-                        AsyncStorage.clear();
-                        navigation.navigate("Login")
-                    }} />
+            <View style={styles.buttonContainer}>
+                {!followMe && <TouchableOpacity style={styles.followButton} onPress={handleFollowMe}>
+                    <Text style={styles.buttonText}>Follow Me!</Text>
+                </TouchableOpacity>}
+                {followMe && (
+                    <TouchableOpacity style={styles.stopFollowingButton} onPress={handleStopFollowing}>
+                        <Text style={styles.buttonText}>Stop Following</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+
+            <View style={styles.sosContainer}>
+                <View style={styles.sosButton}>
+                    <Button title="SOS Emergency Button" onPress={makeSOSCall} />
                 </View>
             </View>
+
         </View>
     );
 };
@@ -281,19 +303,61 @@ const styles = StyleSheet.create({
     page: {
         flex: 1,
     },
-    map: {
+    mapContainer: {
         flex: 1,
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '66%', // 1/3 of the screen height
+        borderWidth: 2, // Adding border to the map
+        borderColor: '#ccc', // Light gray border color
+        padding: 10, // Adding padding around the map
+    },
+    buttonContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '13%', // 1/3 of the screen height
+    },
+    sosContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '13%', // 1/3 of the screen height
+    },
+    followButton: {
+        backgroundColor: '#ffffff', // White color for the Follow Me button
+        padding: 10,
+        borderRadius: 5,
+        width: '60%',
+        alignItems: 'center',
+        borderWidth: 1, // Adding border for better visibility
+        borderColor: '#ccc', // Light gray border color
+    },
+    stopFollowingButton: {
+        backgroundColor: '#dc3545', // Red color for the Stop Following button
+        padding: 10,
+        borderRadius: 5,
+        width: '60%',
         alignItems: 'center',
     },
-    mapOnly: {
-        flex: 1,
-        width: '100%',
+    sosButton: {
+        backgroundColor: '#ff0000', // Red color for the SOS button
+        padding: 20, // Larger padding for larger size
+        borderRadius: 5,
+        width: '60%',
+        alignItems: 'center',
+        fontSize: 20,
+    },
+    buttonText: {
+        color: '#000000', // Black text for visibility
+        fontSize: 18,
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    mapOnly: {
+        width: '100%',
+        height: '100%',
     },
 });
 

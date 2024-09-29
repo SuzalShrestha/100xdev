@@ -5,6 +5,7 @@ import LawIcon from './law.svg';
 import Ngo from './ngo.svg';
 import Taruma from './taruma.svg';
 import Success from './success.svg';
+import SOSButton from '../../../SMS';
 const Home = ({ navigation }) => {
   return (
     <View style={styles.container}>

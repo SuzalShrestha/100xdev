@@ -19,7 +19,7 @@ const TabNavigator = ({ navigation }) => {
   useEffect(() => {
 
     messaging().onMessage(async remoteMessage => {
-      Alert.alert('New Notification Arrived!', JSON.stringify(remoteMessage));
+      Alert.alert('New Notification Arrived!', remoteMessage.notification.title, remoteMessage.notification.body)
     });
 
 
@@ -86,13 +86,8 @@ const TabNavigator = ({ navigation }) => {
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
       })}>
-      <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
-      <Tab.Screen name="Maps" component={HomeScreen} />
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{ headerShown: false }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Info" component={Home} />
       <Tab.Screen
         name="Friends"
         component={FriendsScreen}
@@ -101,6 +96,11 @@ const TabNavigator = ({ navigation }) => {
       <Tab.Screen
         name="Notifications"
         component={Notifications}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
         options={{ headerShown: false }}
       />
 
